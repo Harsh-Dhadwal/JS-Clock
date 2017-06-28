@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Clock</title>
+  <style>
+    body { text-align: center; background-color: black; margin: 0;}
+    canvas { display: inline;}
+  </style>
+</head>
+<body>
+
+  <canvas id="canvas"></canvas>
+
+  <script type="application/javascript">
+
+    canvas = document.getElementById('canvas');
+    // set canvas heigth according to window width/height
+
+    c = canvas.getContext('2d');
+
+    function degToRad (degree) {
+      var factor = Math.PI/180;
+      return degree*factor;
+    }
+
+    // Convert 12 hours and period
+    function myTime(hours, minutes) {
+      if (hours > 12) {
+        period = "PM";
+        hoursNum = (hours - 12);
+        if (hoursNum > 9) {
+          hoursNum1 = "1";
+          hoursNum2 = hoursNum - 10;
+        }
+        else {
+          hoursNum1 = "0";
+          hoursNum2 = hoursNum;
+        }
+      }
+      else {
+        period = "AM";
+        if (hours > 9) {
+          hoursNum1 = "";
+          hoursNum2 = hours;
+        }
+        else {
+          hoursNum1 = "0";
+          hoursNum2 = hours;
+        }
+      }
+
+      if (minutes < 10) {
+        minutesNum1 = "0";
+        minutesNum2 = minutes;
+      }
+      else {
+        minutesNum1 = "";
+        minutesNum2 = minutes;
+      }
+
+      formatTime = hoursNum1 + hoursNum2 + ":" + minutesNum1 + minutesNum2 + " " + period;
+
+      return formatTime;
+    }
+
+    function renderTime () {
+      // Variables
+
+      wWidth = window.innerWidth;                  // get window width
+      wHeight = window.innerHeight - 5;            // get window height
+      if (wWidth > wHeight) {
+        canvas.width = canvas.height = wHeight;
+      }
+      else {
+        canvas.width = canvas.height = wWidth;
+      }
+
+      hRadius = (canvas.width * 80/100)/2;
+      mRadius = (canvas.width * 70/100)/2;
+      sRadius = (canvas.width * 60/100)/2;
+
+      date = new Date();
+      today = date.toDateString();
+      time = date.toLocaleTimeString();
+      hours = date.getHours();
+      minutes = date.getMinutes();
+      seconds = date.getSeconds();
+      milliseconds = date.getMilliseconds();
+      newseconds = seconds + (milliseconds/1000)
+
+      // clear canvas
+      c.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Stroke style
+      c.lineWidth = canvas.width/35;
+      c.strokeStyle = "rgba(126, 368, 126, 0.9)";
+      c.fillStyle = "rgba(126, 368, 126, 0.8)";
+      c.textAlign = "center";
+      c.lineCap = "round";
+      c.shadowBlur = 50;
+      c.shadowColor = "rgba(126, 368, 126, 0.8)";
+
+      // Hours
+      c.beginPath();
+      c.arc(canvas.width/2, canvas.height/2, hRadius, degToRad(270), degToRad((hours*15)-90));
+      c.stroke();
+
+      // Minutes
+      c.beginPath();
+      c.arc(canvas.width/2, canvas.height/2, mRadius, degToRad(270), degToRad((minutes*6)-90));
+      c.stroke();
+
+      // Seconds
+      c.beginPath();
+      c.arc(canvas.width/2, canvas.height/2, sRadius, degToRad(270), degToRad((newseconds*6)-90));
+      c.stroke();
+
+      // Time text
+      timeFont = canvas.width * 10/100;
+      c.beginPath();
+      c.font = String(timeFont) + "px Arial";
+      c.fillText(myTime(hours, minutes), canvas.width/2, canvas.height/2);
+      c.fill();
+
+      dateFont = canvas.width * 4/100;
+      c.beginPath();
+      c.font = String(dateFont) + "px Arial";
+      c.fillText(today, canvas.width/2, (canvas.height/2)+5+dateFont);
+      c.fill();
+
+    }
+
+    setInterval(renderTime, 10);
+
+  </script>
+</body>
+</html>
